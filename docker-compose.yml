@@ -3,15 +3,13 @@ version: '3.8'
 services:
   postgres:
     image: postgres:15
-    container_name: zalupabank-postgres
-    environment:
-      POSTGRES_DB: zalupabank
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
+    container_name: virtualbank-postgres
+    env_file:
+      - .env
     ports:
       - "5432:5432"
     volumes:
-      - postgres_/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
 
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
@@ -30,11 +28,22 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: plaintext://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:29093
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:29093,PLAINTEXT_HOST://0.0.0.0:9093
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_NODE_ID: 1
+    volumes:
+      - kafka_data:/var/lib/kafka/data
 
   kafka-ui:
-    image: provectuslabs/kafka-ui
+    image: provectuslabs/kafka-ui:latest
     ports:
       - "8080:8080"
     depends_on:
@@ -45,9 +54,14 @@ services:
   
   redis:
     image: redis:latest
-    container_name: zalupabank-redis
+    container_name: virtualbank_redis
     ports:
       - "6379:6379"
 
 volumes:
-  postgres_
+  postgres_data:
+  kafka_data:
+
+networks:
+  default:
+    name: virtualbank-network
