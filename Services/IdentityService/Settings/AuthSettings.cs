@@ -1,17 +1,17 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
-namespace IdentityService.Auth;
+namespace IdentityService.Settings;
 
-public class AuthOptions
+public class AuthSettings
 {
     /// <summary>Издатель токена</summary>
-    public const string Issuer = "VirtualBankServer";
+    public string Issuer { get; set; }
     /// <summary>Потребитель токена</summary>
-    public const string Audince = "VirtualBankClient";
+    public string Audince { get; set; }
     /// <summary>Ключ для шифрования</summary>
-    public const string Key = "s3cr3tv1rt83lb3nk";
+    public string Key { get; set; }
 
-    public static SymmetricSecurityKey GetSymmetricSecurityKey
+    public SymmetricSecurityKey GetSymmetricSecurityKey
         => new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Key));
 }
