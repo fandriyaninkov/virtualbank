@@ -1,4 +1,3 @@
-using IdentityService.Auth;
 using IdentityService.DB;
 using IdentityService.Endpoints;
 using IdentityService.Settings;
@@ -45,6 +44,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapGet("/", (ApplicationDbContext db) => db.Database.CanConnect());
+app.RegisterAuthEndpoints();
 app.UseHttpsRedirection();
 
 app.Run();
