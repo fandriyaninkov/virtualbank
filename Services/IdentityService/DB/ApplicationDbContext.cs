@@ -9,6 +9,8 @@ public class ApplicationDbContext : DbContext
 
     }
 
+    public DbSet<User> Users { get; set; } = null!;
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
