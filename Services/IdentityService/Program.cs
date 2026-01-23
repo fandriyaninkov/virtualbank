@@ -1,5 +1,6 @@
 using IdentityService.DB;
 using IdentityService.Endpoints;
+using IdentityService.Services;
 using IdentityService.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,8 @@ builder.Services.AddOptions<AppSettings>()
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connection));
+
+builder.Services.AddTransient<IAuthService, AuthService>();
 
 var serviceProvider = builder.Services.BuildServiceProvider();
 var settings = serviceProvider.GetRequiredService<IOptions<AppSettings>>();
