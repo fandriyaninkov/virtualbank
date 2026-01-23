@@ -52,7 +52,8 @@ public class AuthService(ApplicationDbContext db, IOptions<AppSettings> options)
 
         var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Email, user.Email)
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
             };
         var settings = options.Value.Jwt;
         var jwt = new JwtSecurityToken(
