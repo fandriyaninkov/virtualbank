@@ -1,0 +1,22 @@
+services:
+  identity:
+    build:
+      context: .././Services/IdentityService
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__Postgres: Host=identity-db;Port=5432;Database=identity;Username=identity;Password=identity
+      JWT_SECRET: dev-secret
+    depends_on:
+      - identity-db
+    ports:
+      - "5001:8080"
+
+  identity-db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: identity
+      POSTGRES_USER: identity
+      POSTGRES_PASSWORD: identity
+    volumes:
+      - identity_pg_data:/var/lib/postgresql/data
+      - ./docker/postgres/identity:/docker-entrypoint-initdb.d
