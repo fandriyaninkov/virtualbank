@@ -29,7 +29,7 @@ public class AuthService(ApplicationDbContext db, IOptions<AppSettings> options)
         var user = new User
         {
             Email = email,
-            CreatedAt = DateTime.Now,
+            CreatedAt = DateTime.UtcNow,
             PasswordHash = CrypterService.Crypt(password),
         };
         db.Users.Add(user);
