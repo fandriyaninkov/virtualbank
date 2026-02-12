@@ -16,7 +16,12 @@ public class ApplicationDbContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         var user = modelBuilder.Entity<User>();
-        user.ToTable("Users");
+        user.ToTable("users");
         user.HasKey(p => p.Id);
+
+        user.Property(x => x.Id).HasColumnName("id");
+        user.Property(x => x.CreatedAt).HasColumnName("createdat");
+        user.Property(x => x.Email).HasColumnName("email");
+        user.Property(x => x.PasswordHash).HasColumnName("passwordhash");
     }
 }
