@@ -1,16 +1,12 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
+using Xunit;
 
 namespace IdentityService.Tests;
 
-public class AuthEndpointsTests : IClassFixture<CustomWebApplicationFactory>
+public class AuthEndpointsTests : TestBase
 {
-    private readonly HttpClient _client;
-
-    public AuthEndpointsTests(CustomWebApplicationFactory factory)
-    {
-        _client = factory.CreateClient();
-    }
+    public AuthEndpointsTests(CustomWebApplicationFactory factory) : base(factory) { }
 
     [Fact]
     public async Task Register_ReturnsOk_ForNewUser()

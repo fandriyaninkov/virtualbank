@@ -4,6 +4,7 @@ using IdentityService.Services;
 using IdentityService.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -50,6 +51,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = jwt.GetSymmetricSecurityKey,
             ValidateIssuerSigningKey = true
         });
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
