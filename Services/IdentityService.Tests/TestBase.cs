@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace IdentityService.Tests;
 
-public abstract class TestBase : IAsyncDisposable
+public abstract class TestBase : IDisposable
 {
     protected readonly HttpClient Client;
     private readonly string _databaseName;
@@ -21,12 +21,12 @@ public abstract class TestBase : IAsyncDisposable
         Client = _factory.CreateClient();
     }
 
-    async ValueTask IAsyncDisposable.DisposeAsync()
+    public void Dispose()
     {
         using (var scope = _factory.Services.CreateScope())
         {
             var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            await context.Database.EnsureCreatedAsync();
+            context.Database.EnsureDeleted();
         }
         _factory.Dispose();
     }
