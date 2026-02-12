@@ -7,6 +7,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{58
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityService", "Services\IdentityService\IdentityService.csproj", "{415C4CE6-0C21-4D9F-A350-434206E230B3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityService.Tests", "Services\IdentityService.Tests\IdentityService.Tests.csproj", "{2ACA592F-3CAF-424B-A202-CBC56750BB49}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,11 +31,24 @@ Global
 		{415C4CE6-0C21-4D9F-A350-434206E230B3}.Release|x64.Build.0 = Release|Any CPU
 		{415C4CE6-0C21-4D9F-A350-434206E230B3}.Release|x86.ActiveCfg = Release|Any CPU
 		{415C4CE6-0C21-4D9F-A350-434206E230B3}.Release|x86.Build.0 = Release|Any CPU
+		{2ACA592F-3CAF-424B-A202-CBC56750BB49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2ACA592F-3CAF-424B-A202-CBC56750BB49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2ACA592F-3CAF-424B-A202-CBC56750BB49}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2ACA592F-3CAF-424B-A202-CBC56750BB49}.Debug|x64.Build.0 = Debug|Any CPU
+		{2ACA592F-3CAF-424B-A202-CBC56750BB49}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2ACA592F-3CAF-424B-A202-CBC56750BB49}.Debug|x86.Build.0 = Debug|Any CPU
+		{2ACA592F-3CAF-424B-A202-CBC56750BB49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2ACA592F-3CAF-424B-A202-CBC56750BB49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2ACA592F-3CAF-424B-A202-CBC56750BB49}.Release|x64.ActiveCfg = Release|Any CPU
+		{2ACA592F-3CAF-424B-A202-CBC56750BB49}.Release|x64.Build.0 = Release|Any CPU
+		{2ACA592F-3CAF-424B-A202-CBC56750BB49}.Release|x86.ActiveCfg = Release|Any CPU
+		{2ACA592F-3CAF-424B-A202-CBC56750BB49}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{415C4CE6-0C21-4D9F-A350-434206E230B3} = {5854FF58-B8C5-05C6-5BF2-ACE42193F22B}
+		{2ACA592F-3CAF-424B-A202-CBC56750BB49} = {5854FF58-B8C5-05C6-5BF2-ACE42193F22B}
 	EndGlobalSection
 EndGlobal
