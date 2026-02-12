@@ -34,9 +34,7 @@ public abstract class TestBase : IAsyncDisposable
     private class CustomWebApplicationFactory : WebApplicationFactory<Program>
     {
         public CustomWebApplicationFactory(string databaseName)
-        {
-            DatabaseName = databaseName;
-        }
+            => DatabaseName = databaseName;
 
         private string DatabaseName { get; }
 
