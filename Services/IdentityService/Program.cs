@@ -25,6 +25,9 @@ builder.Services.AddTransient<IAuthService, AuthService>();
 var serviceProvider = builder.Services.BuildServiceProvider();
 var settings = serviceProvider.GetRequiredService<IOptions<AppSettings>>();
 var jwt = settings.Value.Jwt;
+if (jwt == null)
+    throw new ArgumentNullException(nameof(jwt));
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
         options.TokenValidationParameters = new TokenValidationParameters
@@ -32,7 +35,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuer = true,
             ValidIssuer = jwt.Issuer,
             ValidateAudience = true,
-            ValidAudience = jwt.Audince,
+            ValidAudience = jwt.Audience,
             ValidateLifetime = true,
             IssuerSigningKey = jwt.GetSymmetricSecurityKey,
             ValidateIssuerSigningKey = true

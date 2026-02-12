@@ -8,7 +8,7 @@ public class AuthSettings
     /// <summary>Издатель токена</summary>
     public string Issuer { get; set; }
     /// <summary>Потребитель токена</summary>
-    public string Audince { get; set; }
+    public string Audience { get; set; }
     /// <summary>Ключ для шифрования</summary>
     public string Key { get; set; }
 
