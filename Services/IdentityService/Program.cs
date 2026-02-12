@@ -17,7 +17,6 @@ builder.Services.AddOptions<AppSettings>()
     .BindConfiguration("");
 
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
-Console.WriteLine(connection);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connection));
 
