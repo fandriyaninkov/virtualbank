@@ -4,27 +4,37 @@ using IdentityService.Services;
 using IdentityService.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
 builder.Services.AddOptions<AppSettings>()
-    .BindConfiguration("");
+    .BindConfiguration("")
+    .Validate(settings =>
+    {
+        var jwt = settings.Jwt;
 
-var connection = builder.Configuration.GetConnectionString("DefaultConnection");
+        return jwt != null
+               && !string.IsNullOrWhiteSpace(jwt.Issuer)
+               && !string.IsNullOrWhiteSpace(jwt.Audience)
+               && !string.IsNullOrWhiteSpace(jwt.Key)
+               && jwt.Key.Length >= 16;
+    }, "Jwt settings are invalid. Issuer, Audience and Key are required, and Key must be at least 16 chars.")
+    .ValidateOnStart();
+
+var connection = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException("ConnectionStrings:DefaultConnection is not configured.");
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connection));
 
 builder.Services.AddTransient<IAuthService, AuthService>();
 
-var serviceProvider = builder.Services.BuildServiceProvider();
-var settings = serviceProvider.GetRequiredService<IOptions<AppSettings>>();
-var jwt = settings.Value.Jwt;
+var jwt = builder.Configuration.GetSection("Jwt").Get<AuthSettings>()
+    ?? throw new InvalidOperationException("Jwt configuration is missing.");
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
         options.TokenValidationParameters = new TokenValidationParameters
@@ -32,7 +42,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuer = true,
             ValidIssuer = jwt.Issuer,
             ValidateAudience = true,
-            ValidAudience = jwt.Audince,
+            ValidAudience = jwt.Audience,
             ValidateLifetime = true,
             IssuerSigningKey = jwt.GetSymmetricSecurityKey,
             ValidateIssuerSigningKey = true
@@ -40,11 +50,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapGet("/", (ApplicationDbContext db) => db.Database.CanConnect());
 app.RegisterAuthEndpoints();
@@ -52,3 +64,4 @@ app.UseHttpsRedirection();
 
 app.Run();
 
+public partial class Program;

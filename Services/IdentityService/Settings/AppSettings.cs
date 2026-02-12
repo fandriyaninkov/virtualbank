@@ -1,6 +1,6 @@
-﻿namespace IdentityService.Settings;
+namespace IdentityService.Settings;
 
 public class AppSettings
 {
-    public AuthSettings Jwt { get; set; }
+    public required AuthSettings Jwt { get; set; }
 }
