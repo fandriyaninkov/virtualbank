@@ -58,7 +58,7 @@ public class AuthService(ApplicationDbContext db, IOptions<AppSettings> options)
         var settings = options.Value.Jwt;
         var jwt = new JwtSecurityToken(
             issuer: settings.Issuer,
-            audience: settings.Audince,
+            audience: settings.Audience,
             claims: claims,
             expires: DateTime.Now.Add(TimeSpan.FromMinutes(20)),
             signingCredentials: new SigningCredentials(settings.GetSymmetricSecurityKey, SecurityAlgorithms.HmacSha256));
