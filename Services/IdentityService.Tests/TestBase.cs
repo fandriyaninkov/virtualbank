@@ -1,30 +1,61 @@
 ﻿using IdentityService.DB;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
-using Xunit;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace IdentityService.Tests;
 
-public abstract class TestBase : IClassFixture<CustomWebApplicationFactory>, IAsyncLifetime
+public abstract class TestBase : IAsyncDisposable
 {
-    protected readonly HttpClient _client;
+    protected readonly HttpClient Client;
+    private readonly string _databaseName;
     private readonly CustomWebApplicationFactory _factory;
 
-    protected TestBase(CustomWebApplicationFactory factory)
+    protected TestBase()
     {
-        _factory = factory;
-        _client = factory.CreateClient();
+        _databaseName = $"identity-tests-{Guid.NewGuid()}";
+        _factory = new CustomWebApplicationFactory(_databaseName);
+        Client = _factory.CreateClient();
     }
 
-    public async Task DisposeAsync()
+    async ValueTask IAsyncDisposable.DisposeAsync()
     {
-        using var scope = _factory.Services.CreateScope();
-
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-        await db.Database.EnsureDeletedAsync();
-        await db.Database.EnsureCreatedAsync();
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            await context.Database.EnsureCreatedAsync();
+        }
+        _factory.Dispose();
     }
 
-    public Task InitializeAsync()
-        => Task.CompletedTask;
+    private class CustomWebApplicationFactory : WebApplicationFactory<Program>
+    {
+        public CustomWebApplicationFactory(string databaseName)
+        {
+            DatabaseName = databaseName;
+        }
+
+        private string DatabaseName { get; }
+
+        protected override void ConfigureWebHost(IWebHostBuilder builder)
+        {
+            builder.UseEnvironment("Development");
+
+            builder.ConfigureServices(services =>
+            {
+                services.RemoveAll<ApplicationDbContext>();
+                services.RemoveAll<DbContextOptions<ApplicationDbContext>>();
+                services.RemoveAll<IDbContextOptionsConfiguration<ApplicationDbContext>>();
+
+                services.AddDbContext<ApplicationDbContext>(options =>
+                {
+                    options.UseInMemoryDatabase(DatabaseName);
+                });
+            });
+        }
+    }
 }
+

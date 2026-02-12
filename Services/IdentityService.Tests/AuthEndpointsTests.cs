@@ -6,12 +6,10 @@ namespace IdentityService.Tests;
 
 public class AuthEndpointsTests : TestBase
 {
-    public AuthEndpointsTests(CustomWebApplicationFactory factory) : base(factory) { }
-
     [Fact]
     public async Task Register_ReturnsOk_ForNewUser()
     {
-        var response = await _client.PostAsync($"/auth/register?email={Uri.EscapeDataString("newuser@example.com")}&password=Secret123!", null);
+        var response = await Client.PostAsync($"/auth/register?email={Uri.EscapeDataString("newuser@example.com")}&password=Secret123!", null);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
@@ -21,8 +19,8 @@ public class AuthEndpointsTests : TestBase
     {
         var email = Uri.EscapeDataString("duplicate@example.com");
 
-        var firstResponse = await _client.PostAsync($"/auth/register?email={email}&password=Secret123!", null);
-        var secondResponse = await _client.PostAsync($"/auth/register?email={email}&password=Secret123!", null);
+        var firstResponse = await Client.PostAsync($"/auth/register?email={email}&password=Secret123!", null);
+        var secondResponse = await Client.PostAsync($"/auth/register?email={email}&password=Secret123!", null);
 
         Assert.Equal(HttpStatusCode.OK, firstResponse.StatusCode);
         Assert.Equal(HttpStatusCode.BadRequest, secondResponse.StatusCode);
@@ -33,8 +31,8 @@ public class AuthEndpointsTests : TestBase
     {
         var email = Uri.EscapeDataString("login-ok@example.com");
 
-        await _client.PostAsync($"/auth/register?email={email}&password=Secret123!", null);
-        var loginResponse = await _client.PostAsync($"/auth/login?email={email}&password=Secret123!", null);
+        await Client.PostAsync($"/auth/register?email={email}&password=Secret123!", null);
+        var loginResponse = await Client.PostAsync($"/auth/login?email={email}&password=Secret123!", null);
 
         Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
 
@@ -51,8 +49,8 @@ public class AuthEndpointsTests : TestBase
     {
         var email = Uri.EscapeDataString("wrong-password@example.com");
 
-        await _client.PostAsync($"/auth/register?email={email}&password=Secret123!", null);
-        var loginResponse = await _client.PostAsync($"/auth/login?email={email}&password=WrongPass!", null);
+        await Client.PostAsync($"/auth/register?email={email}&password=Secret123!", null);
+        var loginResponse = await Client.PostAsync($"/auth/login?email={email}&password=WrongPass!", null);
 
         Assert.Equal(HttpStatusCode.Unauthorized, loginResponse.StatusCode);
     }
