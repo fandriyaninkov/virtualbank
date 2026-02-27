@@ -47,10 +47,10 @@ public class AuthService(ApplicationDbContext db, IOptions<AppSettings> options)
                 .FirstOrDefaultAsync();
 
         if (user == null)
-            return new(null, "Пользователя с таким email не существует");
+            return new(null, "Неверный логин и/или пароль");
 
         if (!CrypterService.Verify(user.PasswordHash, password))
-            return new(null, "Неверный пароль");
+            return new(null, "Неверный логин и/или пароль");
 
         var claims = new List<Claim>
             {
