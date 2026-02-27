@@ -1,9 +1,11 @@
 ﻿using IdentityService.DB;
+using IdentityService.Models.Auth;
 using IdentityService.Settings;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Security.Claims;
 
 namespace IdentityService.Services;
@@ -11,20 +13,20 @@ namespace IdentityService.Services;
 public interface IAuthService
 {
     /// <summary>Регистрация</summary>
-    Task<string> RegisterAsync(string email, string password);
+    Task<RegisterModel> RegisterAsync(string email, string password);
     /// <summary>Авторизация</summary>
-    Task<(string Error, string Token)> LoginAsync(string email, string password);
+    Task<LoginModel> LoginAsync(string email, string password);
 }
 
 public class AuthService(ApplicationDbContext db, IOptions<AppSettings> options) : IAuthService
 {
-    public async Task<string> RegisterAsync(string email, string password)
+    public async Task<RegisterModel> RegisterAsync(string email, string password)
     {
         var already = await db.Users
             .Where(u => u.Email == email)
             .FirstOrDefaultAsync();
         if (already != null)
-            return "Пользователь с таким email уже существует";
+            return new(false, "Пользователь с таким email уже существует");
 
         var user = new User
         {
@@ -35,20 +37,20 @@ public class AuthService(ApplicationDbContext db, IOptions<AppSettings> options)
         db.Users.Add(user);
         await db.SaveChangesAsync();
 
-        return null;
+        return new(true);
     }
 
-    public async Task<(string Error, string Token)> LoginAsync(string email, string password)
+    public async Task<LoginModel> LoginAsync(string email, string password)
     {
         var user = await db.Users
                 .Where(x => x.Email == email)
                 .FirstOrDefaultAsync();
 
         if (user == null)
-            return ("Пользователя с таким email не существует", null);
+            return new(null, "Пользователя с таким email не существует");
 
         if (!CrypterService.Verify(user.PasswordHash, password))
-            return ("Пользователя с таким email не существует", null);
+            return new(null, "Неверный пароль");
 
         var claims = new List<Claim>
             {
@@ -63,6 +65,6 @@ public class AuthService(ApplicationDbContext db, IOptions<AppSettings> options)
             expires: DateTime.Now.Add(TimeSpan.FromMinutes(20)),
             signingCredentials: new SigningCredentials(settings.GetSymmetricSecurityKey, SecurityAlgorithms.HmacSha256));
 
-        return (null, new JwtSecurityTokenHandler().WriteToken(jwt));
+        return new(new JwtSecurityTokenHandler().WriteToken(jwt), null);
     }
 }
