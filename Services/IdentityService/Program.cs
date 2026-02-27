@@ -33,9 +33,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddTransient<IAuthService, AuthService>();
 
-var serviceProvider = builder.Services.BuildServiceProvider();
-var settings = serviceProvider.GetRequiredService<IOptions<AppSettings>>();
-var jwt = settings.Value.Jwt;
+builder.Services.AddTransient<IAuthService, AuthService>();
+var jwt = builder.Configuration.GetSection("Jwt").Get<AuthSettings>();
 if (jwt == null)
     throw new ArgumentNullException(nameof(jwt));
 
